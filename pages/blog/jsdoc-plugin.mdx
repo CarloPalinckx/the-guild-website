@@ -18,36 +18,59 @@ With the release of the `@graphql-code-generator/jsdoc` plugin you can generate 
 
 > If you are not familiar with setting up graphql-code-generator yet. Have a look at these docs (link to docs) for more in-depth information on configuration.
 
-To start using this plugin, we first have to install it.
-
-In the case that you have have not installed any @graphql-code-generator plugins, run:
+To start using this plugin, we first have to install it. Let's add the graphql-codegen dependencies along with the new jsdoc plugin:
 ```
-```
-
-Or when you want to add jsdoc to your existing configuration, run:
-```
+yarn add -D graphql @graphql-codegen/cli @graphql-codegen/jsdoc
+// with npm
+npm install --save-dev graphql @graphql-codegen/cli @graphql-codegen/jsdoc
 ```
 
 Once installed, you can go ahead and stick this in your codegen configuration file
 ```
+generates:
+  ./src/types.js:
+    plugins:
+      - jsdoc
 ```
 
-Now we are all set up, let's look at how we can generate us some types.
+> Note that the generated file can be a .js file since you will probably be using it from a js file as well.
+
+Now we are all set up, let's look at how we can generate some types.
 
 First we'll need a schema to interact with, we can do this by either passing a path to a schema file or a url into our config. For this example we'll use the public graphql pokemon api:
 
-+- of config file.
+```
++ schema: https://graphql-pokemon.now.sh/
+generates:
+  ./src/types.js:
+    plugins:
+      - jsdoc
+```
 
 Then, we can create a .graphql file that holds our query:
 
 ```
+query getPokemon($name: String!) {
+  pokemon(name: $name) {
+    id
+    name
+    image
+  }
+}
 ```
 
-> Note that this version of the jsdoc plugin does not yet generate type definitions specifically for your queries or mutations, but we require at least 1 .graphql file to be present.
+> Note that this version of the jsdoc plugin does not yet generate type definitions specifically for your queries or mutations, but requires at least 1 .graphql file to be present. Hence we add a query file here
 
-All set! Let's run the code generator:
+All set! Let's run code generator by adding a script to our `package.json` 
 
+```json
+{
+  "scripts": {
+    "generate": "graphql-codegen"
+  }
+}
 ```
-```
+
+and then running `yarn generate` ✨.
 
 This results in a bunch of generated docblocks that you can import and use to typecheck your javascript code! 
